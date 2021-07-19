@@ -1,11 +1,13 @@
 import { performance } from 'node:perf_hooks'
 
-import type { Hooks } from './types/hooks.js'
 import type { Results } from '../common/types/results.js'
+
+import { logResults } from '../common/helpers/log-results.js'
+
+import type { Hooks } from './types/hooks.js'
 import type { Suite } from './types/suite.js'
 import type { Tester } from './types/tester.js'
 
-import { logResults } from '../common/helpers/log-results.js'
 import { noop } from './helpers/noop.js'
 import { parallel } from './helpers/parallel.js'
 import { serial } from './helpers/serial.js'

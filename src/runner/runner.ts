@@ -47,7 +47,7 @@ const runTest = async (
       resolve(stats)
     })
 
-    worker.on('exit', (code) => {
+    worker.on('exit', () => {
       resolve(stats)
     })
   })
@@ -68,6 +68,7 @@ export const exec = async ({
 
   const endTime = performance.now()
 
+  // eslint-disable-next-line unicorn/no-array-reduce
   const stats: Results['stats'] = results.reduce(
     (totalStats, currentStats) => {
       totalStats.total += currentStats.total

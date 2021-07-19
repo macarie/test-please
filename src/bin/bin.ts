@@ -8,7 +8,7 @@ import { exec } from '../runner/runner.js'
 
 sade('test-please [tests]')
   .option('-C, --cwd', 'The current directory to resolve from', cwd())
-  .action(async (tests, options) => {
+  .action(async (tests: string | string[], options: { cwd: string }) => {
     try {
       await exec({
         tests: Array.isArray(tests) ? tests : [tests],
