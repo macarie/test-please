@@ -20,6 +20,7 @@
     "compile": "run-s -s compile:clean compile:library",
     "lint:tsc": "tsc --noemit",
     "lint:xo": "xo",
+    "go": "run-s -s compile:transpile run",
     "lint": "run-p -s lint:*"
   },
   "engines": {
@@ -52,6 +53,7 @@
   },
   "dependencies": {
     "@macarie/batch": "^1.2.1",
+    "dequal": "^2.0.2",
     "diff": "^5.0.0",
     "kleur": "^4.1.4",
     "sade": "^1.7.4",
