@@ -20,7 +20,6 @@
     "compile": "run-s -s compile:clean compile:library",
     "lint:tsc": "tsc --noemit",
     "lint:xo": "xo",
-    "go": "run-s -s compile:transpile run",
     "lint": "run-p -s lint:*"
   },
   "engines": {
