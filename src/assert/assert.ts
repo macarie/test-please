@@ -1,7 +1,7 @@
+import { dequal } from 'dequal'
+
 import type { Assertion } from './types/assertion.js'
 import type { Diff } from './types/diff.js'
-
-import { dequal } from 'dequal'
 
 import { AssertionError } from './helpers/assertion-error.js'
 import { compare } from './helpers/compare.js'
@@ -45,7 +45,7 @@ export const equal = <AssertionType>(
   message?: string
 ) => {
   assert(
-    Object.is(actual, expected),
+    dequal(actual, expected),
     'equal',
     compare(actual, expected),
     message,
