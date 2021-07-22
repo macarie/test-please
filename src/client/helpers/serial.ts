@@ -2,7 +2,9 @@ import type { Hook } from '../types/hook.js'
 import type { Tester } from '../types/tester.js'
 import type { Results } from '../../common/types/results.js'
 
+import { AssertionError } from '../../assert/helpers/assertion-error.js'
 import { TestResult } from '../../common/helpers/test-result.js'
+import { getTesterTitle } from './tester-title.js'
 import { noop } from './noop.js'
 
 export const serial = async <Context>({
@@ -42,6 +44,10 @@ export const serial = async <Context>({
       results.results[index] = TestResult.ok
       results.stats.passed += 1
     } catch (error: unknown) {
+      if (error instanceof AssertionError) {
+        error.setTesterTitle(getTesterTitle(promise))
+      }
+
       results.results[index] = error as Error
       results.stats.failed += 1
     }
