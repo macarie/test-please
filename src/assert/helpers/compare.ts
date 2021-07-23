@@ -81,9 +81,9 @@ const inspectOptions: InspectOptions = {
   compact: false,
 }
 
-export const compare = <AssertionType>(
-  value: AssertionType,
-  expected: AssertionType
+export const compare = <ValueT>(
+  value: ValueT,
+  expected: ValueT
 ): string => {
   const actualFormatted = inspect(value, inspectOptions)
   const expectedFormatted = inspect(expected, inspectOptions)

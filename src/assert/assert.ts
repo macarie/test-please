@@ -24,10 +24,10 @@ const assert = (
   })
 }
 
-const compareValues = <AssertionType>(
+const compareValues = <ValueT>(
   satisfied: boolean,
-  value: AssertionType,
-  expected: AssertionType
+  value: ValueT,
+  expected: ValueT
 ): string => {
   if (satisfied) {
     return ''
@@ -36,9 +36,9 @@ const compareValues = <AssertionType>(
   return compare(value, expected)
 }
 
-export const is = <AssertionType>(
-  value: AssertionType,
-  expected: AssertionType,
+export const is = <ValueT>(
+  value: ValueT,
+  expected: ValueT,
   message?: string
 ) => {
   const satisfied = Object.is(value, expected)
@@ -47,9 +47,9 @@ export const is = <AssertionType>(
   assert(satisfied, 'is', diff, message, is)
 }
 
-export const equal = <AssertionType>(
-  value: AssertionType,
-  expected: AssertionType,
+export const equal = <ValueT>(
+  value: ValueT,
+  expected: ValueT,
   message?: string
 ) => {
   const satisfied = dequal(value, expected)
@@ -58,10 +58,7 @@ export const equal = <AssertionType>(
   assert(satisfied, 'equal', diff, message, equal)
 }
 
-export const truthy = <AssertionType>(
-  value: AssertionType,
-  message?: string
-) => {
+export const truthy = <ValueT>(value: ValueT, message?: string) => {
   const satisfied = Boolean(value)
   const diff: string = compareValues(satisfied, satisfied, true)
 
