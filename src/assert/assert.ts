@@ -57,3 +57,13 @@ export const equal = <AssertionType>(
 
   assert(satisfied, 'equal', diff, message, equal)
 }
+
+export const truthy = <AssertionType>(
+  value: AssertionType,
+  message?: string
+) => {
+  const satisfied = Boolean(value)
+  const diff: string = compareValues(satisfied, satisfied, true)
+
+  assert(satisfied, 'truthy', diff, message, truthy)
+}

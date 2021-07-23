@@ -1,1 +1,1 @@
-export type Assertion = 'is' | 'equal'
+export type Assertion = 'is' | 'equal' | 'truthy'
