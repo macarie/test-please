@@ -9,6 +9,7 @@ $.enabled = true
 
 const MINUS: string = red(' --- ')
 const PLUS: string = green(' +++ ')
+const ANSI_FIXED = '\u001B['
 
 const hasNewLines = (string: string): boolean => /\r?\n/.test(string)
 const cleanValue = (string: string): string =>
@@ -41,15 +42,31 @@ const compareStrings = (value: string, expected: string): string => {
 
   let minus: string = MINUS
   let plus: string = PLUS
+  let buffer = ''
+
   for (const change of diff) {
     if (change.added) {
-      plus += bold(change.value)
-    } else if (change.removed) {
-      minus += bold(change.value)
-    } else {
-      plus += dim(change.value)
-      minus += dim(change.value)
+      plus += bold(buffer + change.value)
+      continue
     }
+
+    if (change.removed) {
+      minus += bold(buffer + change.value)
+      continue
+    }
+
+    buffer = ''
+
+    let cleanValue = change.value
+
+    if (change.value.endsWith('\u001B[')) {
+      // eslint-disable-next-line no-control-regex
+      cleanValue = change.value.replace(/\u001B\[$/, '')
+      buffer = ANSI_FIXED
+    }
+
+    plus += dim(cleanValue)
+    minus += dim(cleanValue)
   }
 
   return `${minus}\n${plus}`
