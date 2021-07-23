@@ -27,7 +27,7 @@ const compareLines = (
       const symbol = change.added ? PLUS : MINUS
 
       for (const line of cleanValue(change.value).split('\n')) {
-        output += `${symbol} ${bold(line)}\n`
+        output += `${symbol}${bold(line)}\n`
       }
     } else {
       for (const line of cleanValue(change.value).split('\n')) {
