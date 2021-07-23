@@ -14,10 +14,7 @@ const hasNewLines = (string: string): boolean => /\r?\n/.test(string)
 const cleanValue = (string: string): string =>
   string.replace(/\r/g, '').replace(/\n$/, '')
 
-const compareLines = (
-  value: string,
-  expected: string
-): string => {
+const compareLines = (value: string, expected: string): string => {
   const diff = diffLines(value, expected)
 
   let output = ''
@@ -39,10 +36,7 @@ const compareLines = (
   return output
 }
 
-const compareStrings = (
-  value: string,
-  expected: string
-): string => {
+const compareStrings = (value: string, expected: string): string => {
   const diff = diffWordsWithSpace(value.toString(), expected.toString())
 
   let minus: string = MINUS
