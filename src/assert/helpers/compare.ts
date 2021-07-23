@@ -15,10 +15,10 @@ const cleanValue = (string: string): string =>
   string.replace(/\r/g, '').replace(/\n$/, '')
 
 const compareLines = (
-  actual: string,
+  value: string,
   expected: string
 ): string => {
-  const diff = diffLines(actual, expected)
+  const diff = diffLines(value, expected)
 
   let output = ''
 
@@ -40,10 +40,10 @@ const compareLines = (
 }
 
 const compareStrings = (
-  actual: string,
+  value: string,
   expected: string
 ): string => {
-  const diff = diffWordsWithSpace(actual.toString(), expected.toString())
+  const diff = diffWordsWithSpace(value.toString(), expected.toString())
 
   let minus: string = MINUS
   let plus: string = PLUS
@@ -71,10 +71,10 @@ const inspectOptions: InspectOptions = {
 }
 
 export const compare = <AssertionType>(
-  actual: AssertionType,
+  value: AssertionType,
   expected: AssertionType
 ): string => {
-  const actualFormatted = inspect(actual, inspectOptions)
+  const actualFormatted = inspect(value, inspectOptions)
   const expectedFormatted = inspect(expected, inspectOptions)
 
   if (

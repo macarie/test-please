@@ -25,23 +25,23 @@ const assert = (
 }
 
 export const is = <AssertionType>(
-  actual: AssertionType,
+  value: AssertionType,
   expected: AssertionType,
   message?: string
 ) => {
-  const satisfied = Object.is(actual, expected)
-  const diff: string = satisfied ? '' : compare(actual, expected)
+  const satisfied = Object.is(value, expected)
+  const diff: string = satisfied ? '' : compare(value, expected)
 
   assert(satisfied, 'is', diff, message, is)
 }
 
 export const equal = <AssertionType>(
-  actual: AssertionType,
+  value: AssertionType,
   expected: AssertionType,
   message?: string
 ) => {
-  const satisfied = dequal(actual, expected)
-  const diff: string = satisfied ? '' : compare(actual, expected)
+  const satisfied = dequal(value, expected)
+  const diff: string = satisfied ? '' : compare(value, expected)
 
   assert(satisfied, 'equal', diff, message, equal)
 }
