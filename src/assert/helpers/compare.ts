@@ -14,9 +14,9 @@ const hasNewLines = (string: string): boolean => /\r?\n/.test(string)
 const cleanValue = (string: string): string =>
   string.replace(/\r/g, '').replace(/\n$/, '')
 
-const compareLines = <AssertionType extends string>(
-  actual: AssertionType,
-  expected: AssertionType
+const compareLines = (
+  actual: string,
+  expected: string
 ): string => {
   const diff = diffLines(actual, expected)
 
@@ -39,9 +39,9 @@ const compareLines = <AssertionType extends string>(
   return output
 }
 
-const compareStrings = <AssertionType extends string>(
-  actual: AssertionType,
-  expected: AssertionType
+const compareStrings = (
+  actual: string,
+  expected: string
 ): string => {
   const diff = diffWordsWithSpace(actual.toString(), expected.toString())
 
