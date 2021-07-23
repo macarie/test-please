@@ -59,8 +59,9 @@ export const equal = <ValueT>(
 }
 
 export const truthy = <ValueT>(value: ValueT, message?: string) => {
-  const satisfied = Boolean(value)
-  const diff: string = compareValues(satisfied, satisfied, true)
+  // eslint-disable-next-line eqeqeq
+  const satisfied = (value as unknown) == true
+  const diff: string = compareValues(satisfied, value, true as unknown)
 
   assert(satisfied, 'truthy', diff, message, truthy)
 }
