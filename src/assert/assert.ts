@@ -5,12 +5,14 @@ import type { Assertion } from './types/assertion.js'
 import { AssertionError } from './helpers/assertion-error.js'
 import { compare } from './helpers/compare.js'
 
+type StackTraceEnd = typeof equal | typeof is | typeof truthy | typeof falsy
+
 const assert = (
   satisfied: boolean,
   assertion: Assertion,
   diff: string,
   message: string | undefined,
-  stackTraceEnd: Function // eslint-disable-line @typescript-eslint/ban-types
+  stackTraceEnd: StackTraceEnd
 ) => {
   if (satisfied) {
     return
