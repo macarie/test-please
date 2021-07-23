@@ -30,8 +30,8 @@ const compareLines = (
         output += `${symbol}${bold(line)}\n`
       }
     } else {
-      for (const line of cleanValue(change.value).split('\n')) {
-        output += `     ${dim(gray(line))}\n`
+      for (const line of dim(gray(cleanValue(change.value))).split('\n')) {
+        output += `     ${line}\n`
       }
     }
   }
