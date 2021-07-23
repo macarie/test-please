@@ -29,13 +29,10 @@ export const is = <AssertionType>(
   expected: AssertionType,
   message?: string
 ) => {
-  assert(
-    Object.is(actual, expected),
-    'is',
-    compare(actual, expected),
-    message,
-    is
-  )
+  const satisfied = Object.is(actual, expected)
+  const diff: string = satisfied ? '' : compare(actual, expected)
+
+  assert(satisfied, 'is', diff, message, is)
 }
 
 export const equal = <AssertionType>(
@@ -43,11 +40,8 @@ export const equal = <AssertionType>(
   expected: AssertionType,
   message?: string
 ) => {
-  assert(
-    dequal(actual, expected),
-    'equal',
-    compare(actual, expected),
-    message,
-    equal
-  )
+  const satisfied = dequal(actual, expected)
+  const diff: string = satisfied ? '' : compare(actual, expected)
+
+  assert(satisfied, 'equal', diff, message, equal)
 }
