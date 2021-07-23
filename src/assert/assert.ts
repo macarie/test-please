@@ -75,3 +75,19 @@ export const falsy = (value: any, message?: string) => {
 
   assert(satisfied, 'falsy', diff, message, falsy)
 }
+
+is.not = <ValueT>(value: ValueT, expected: ValueT, message?: string) => {
+  const satisfied = !Object.is(value, expected)
+  const diff: string = compareValues(satisfied, value, expected)
+
+  assert(satisfied, 'is:not', diff, message, is)
+}
+
+export const not = {
+  equal: <ValueT>(value: ValueT, expected: ValueT, message?: string) => {
+    const satisfied = !dequal(value, expected)
+    const diff: string = compareValues(satisfied, value, expected)
+
+    assert(satisfied, 'not:equal', diff, message, not.equal)
+  },
+}
