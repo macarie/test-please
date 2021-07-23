@@ -3,10 +3,12 @@ import type { InspectOptions } from 'node:util'
 import { inspect } from 'node:util'
 
 import { diffWordsWithSpace, diffLines } from 'diff'
-import type { Diff } from '../types/diff.js'
+import { $, bold, dim, gray, green, red } from 'kleur/colors'
 
-const MINUS: Diff = { value: ' --- ', color: 'red' }
-const PLUS: Diff = { value: ' +++ ', color: 'green' }
+$.enabled = true
+
+const MINUS: string = red(' --- ')
+const PLUS: string = green(' +++ ')
 
 const hasNewLines = (string: string): boolean => /\r?\n/.test(string)
 const cleanValue = (string: string): string =>
@@ -15,30 +17,21 @@ const cleanValue = (string: string): string =>
 const compareLines = <AssertionType extends string>(
   actual: AssertionType,
   expected: AssertionType
-): Diff[][] => {
+): string => {
   const diff = diffLines(actual, expected)
 
-  const output: Diff[][] = []
+  let output = ''
 
   for (const change of diff) {
     if (change.added || change.removed) {
       const symbol = change.added ? PLUS : MINUS
-      const modifiers: Partial<Diff> = change.added
-        ? { color: 'green', modifier: 'bold' }
-        : { color: 'red', modifier: 'bold' }
 
       for (const line of cleanValue(change.value).split('\n')) {
-        output.push([symbol, { value: line, ...modifiers }])
+        output += `${symbol} ${bold(line)}\n`
       }
     } else {
       for (const line of cleanValue(change.value).split('\n')) {
-        output.push([
-          {
-            value: `     ${line}`,
-            color: 'gray',
-            modifier: 'dim',
-          },
-        ])
+        output += `     ${dim(gray(line))}\n`
       }
     }
   }
@@ -49,23 +42,23 @@ const compareLines = <AssertionType extends string>(
 const compareStrings = <AssertionType extends string>(
   actual: AssertionType,
   expected: AssertionType
-): Diff[][] => {
+): string => {
   const diff = diffWordsWithSpace(actual.toString(), expected.toString())
 
-  const minus: Diff[] = [MINUS]
-  const plus: Diff[] = [PLUS]
+  let minus: string = MINUS
+  let plus: string = PLUS
   for (const change of diff) {
     if (change.added) {
-      plus.push({ value: change.value, modifier: 'bold' })
+      plus += bold(change.value)
     } else if (change.removed) {
-      minus.push({ value: change.value, modifier: 'bold' })
+      minus += bold(change.value)
     } else {
-      plus.push({ value: change.value, modifier: 'dim' })
-      minus.push({ value: change.value, modifier: 'dim' })
+      plus += dim(change.value)
+      minus += dim(change.value)
     }
   }
 
-  return [minus, plus]
+  return `${minus}\n${plus}`
 }
 
 const inspectOptions: InspectOptions = {
@@ -80,7 +73,7 @@ const inspectOptions: InspectOptions = {
 export const compare = <AssertionType>(
   actual: AssertionType,
   expected: AssertionType
-): Diff[][] => {
+): string => {
   const actualFormatted = inspect(actual, inspectOptions)
   const expectedFormatted = inspect(expected, inspectOptions)
 

@@ -1,9 +1,8 @@
 import type { Assertion } from '../types/assertion.js'
-import type { Diff } from '../types/diff.js'
 
 export class AssertionError extends Error {
   assertion: Assertion
-  diff: Diff[][]
+  diff: string
   testerTitle: string
 
   constructor({
@@ -13,7 +12,7 @@ export class AssertionError extends Error {
     stackTraceEnd,
   }: {
     assertion: Assertion
-    diff: Diff[][]
+    diff: string
     message?: string
     stackTraceEnd: Function // eslint-disable-line @typescript-eslint/ban-types
   }) {

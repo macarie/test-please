@@ -19,29 +19,12 @@ import {
 } from 'kleur/colors'
 
 import type { Except } from 'type-fest'
-import type { Diff } from '../../assert/types/diff.js'
 import type { Results } from '../types/results.js'
 
 import { AssertionError } from '../../assert/helpers/assertion-error.js'
 import { messages } from '../../assert/helpers/messages.js'
 import { TestResult } from './test-result.js'
 import { logStats } from './log-stats.js'
-
-const identity = <T>(t: T) => t
-const diffColors: Record<
-  Exclude<Diff['color'], undefined>,
-  (input: string) => string
-> = {
-  red,
-  green,
-  gray,
-  default: identity,
-}
-const diffModifiers = {
-  dim,
-  bold,
-  default: identity,
-}
 
 const okSymbol = green('•')
 const skippedSymbol = yellow('~')
@@ -114,15 +97,7 @@ export const logResults = ({
           }\n`
         )
 
-        for (const diff of assertionError.diff) {
-          console.log(
-            diff
-              .map(({ value, color = 'default', modifier = 'default' }) =>
-                diffModifiers[modifier](diffColors[color](value))
-              )
-              .join('')
-          )
-        }
+        console.log(assertionError.diff)
       } else {
         console.error(error)
       }

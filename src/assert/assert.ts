@@ -1,7 +1,6 @@
 import { dequal } from 'dequal'
 
 import type { Assertion } from './types/assertion.js'
-import type { Diff } from './types/diff.js'
 
 import { AssertionError } from './helpers/assertion-error.js'
 import { compare } from './helpers/compare.js'
@@ -9,7 +8,7 @@ import { compare } from './helpers/compare.js'
 const assert = (
   satisfied: boolean,
   assertion: Assertion,
-  diff: Diff[][],
+  diff: string,
   message: string | undefined,
   stackTraceEnd: Function // eslint-disable-line @typescript-eslint/ban-types
 ) => {
