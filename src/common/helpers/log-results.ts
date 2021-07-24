@@ -25,6 +25,9 @@ import { AssertionError } from '../../assert/helpers/assertion-error.js'
 import { messages } from '../../assert/helpers/messages.js'
 import { TestResult } from './test-result.js'
 import { logStats } from './log-stats.js'
+import { getLines } from './get-lines.js'
+
+const identity = <XT>(x: XT): XT => x
 
 const okSymbol = green('•')
 const skippedSymbol = yellow('~')
@@ -84,15 +87,33 @@ export const logResults = ({
     for (const error of errorsToLog) {
       if (error.name === 'AssertionError[TestPlease]') {
         const assertionError = error as AssertionError
-        const relativeFilePath = relative(
-          workingDirectory ?? cwd(),
-          fileURLToPath(/\w (.+?:\d+:\d+)/.exec(assertionError.stack!)![1])
-        )
+        const [, fileURL, lineMatched] = /\w (.+?:(\d+):\d+)/.exec(
+          assertionError.stack!
+        )!
+
+        const filePath = fileURLToPath(fileURL)
+        const relativeFilePath = relative(workingDirectory ?? cwd(), filePath)
+        const line = Number(lineMatched)
+        const errorLine = getLines(filePath.split(':')[0], line)
+        const linePad = Math.log10(line) + 1
 
         console.log(
-          `  ${bold(assertionError.testerTitle)}\n   ${dim(
+          `  ${bold(assertionError.testerTitle)}\n  ${dim(
             gray(`» ${relativeFilePath}`)
-          )}\n\n  ${
+          )}\n\n${errorLine
+            .map(
+              ([lineNumber, content]) => {
+                const bgColor = lineNumber === line ? bgRed : identity
+                const modifier = lineNumber === line ? identity : dim
+
+                return `  ${
+                  bgColor(` ${modifier(white(
+                  `${lineNumber.toString().padStart(linePad, ' ')}:`
+                ))} ${content} `)
+                }`
+              }
+            )
+            .join('\n')}\n\n  ${
             assertionError.message || messages[assertionError.assertion]
           }\n`
         )
