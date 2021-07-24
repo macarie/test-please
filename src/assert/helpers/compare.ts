@@ -7,8 +7,8 @@ import { $, bold, dim, gray, green, red } from 'kleur/colors'
 
 $.enabled = true
 
-const MINUS: string = red(' --- ')
-const PLUS: string = green(' +++ ')
+const MINUS: string = red('  --- ')
+const PLUS: string = green('  +++ ')
 const ANSI_FIXED = '\u001B['
 
 const hasNewLines = (string: string): boolean => /\r?\n/.test(string)
@@ -29,7 +29,7 @@ const compareLines = (value: string, expected: string): string => {
       }
     } else {
       for (const line of dim(gray(cleanValue(change.value))).split('\n')) {
-        output += `     ${line}\n`
+        output += `      ${line}\n`
       }
     }
   }
