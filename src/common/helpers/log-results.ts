@@ -92,28 +92,32 @@ export const logResults = ({
         )!
 
         const filePathWithLineAndColumn = fileURLToPath(fileURL)
-        const relativeFilePathWithLineAndColumn = relative(workingDirectory ?? cwd(), filePathWithLineAndColumn)
+        const relativeFilePathWithLineAndColumn = relative(
+          workingDirectory ?? cwd(),
+          filePathWithLineAndColumn
+        )
 
         const line = Number(lineMatched)
-        const errorLine = getLines(filePathWithLineAndColumn.replace(/:\d+:\d+$/, ''), line)
+        const errorLine = getLines(
+          filePathWithLineAndColumn.replace(/:\d+:\d+$/, ''),
+          line
+        )
         const linePad = Math.log10(line) + 1
 
         console.log(
           `  ${bold(assertionError.testerTitle)}\n  ${dim(
             gray(`» ${relativeFilePathWithLineAndColumn}`)
           )}\n\n${errorLine
-            .map(
-              ([lineNumber, content]) => {
-                const bgColor = lineNumber === line ? bgRed : identity
-                const modifier = lineNumber === line ? identity : dim
+            .map(([lineNumber, content]) => {
+              const bgColor = lineNumber === line ? bgRed : identity
+              const modifier = lineNumber === line ? identity : dim
 
-                return `  ${
-                  bgColor(` ${modifier(white(
-                  `${lineNumber.toString().padStart(linePad, ' ')}:`
-                ))} ${content} `)
-                }`
-              }
-            )
+              return `  ${bgColor(
+                ` ${modifier(
+                  white(`${lineNumber.toString().padStart(linePad, ' ')}:`)
+                )} ${content} `
+              )}`
+            })
             .join('\n')}\n\n  ${
             assertionError.message || messages[assertionError.assertion]
           }\n`

@@ -1,9 +1,7 @@
-import type { InspectOptions } from 'node:util'
-
-import { inspect } from 'node:util'
-
 import { diffWordsWithSpace, diffLines } from 'diff'
 import { $, bold, dim, gray, green, red } from 'kleur/colors'
+
+import { format } from './format.js'
 
 $.enabled = true
 
@@ -72,18 +70,9 @@ const compareStrings = (value: string, expected: string): string => {
   return `${minus}\n${plus}`
 }
 
-const inspectOptions: InspectOptions = {
-  colors: true,
-  depth: Number.POSITIVE_INFINITY,
-  maxArrayLength: Number.POSITIVE_INFINITY,
-  maxStringLength: Number.POSITIVE_INFINITY,
-  sorted: true,
-  compact: false,
-}
-
 export const compare = <ValueT>(value: ValueT, expected: ValueT): string => {
-  const actualFormatted = inspect(value, inspectOptions)
-  const expectedFormatted = inspect(expected, inspectOptions)
+  const actualFormatted = format(value)
+  const expectedFormatted = format(expected)
 
   if (
     [actualFormatted, expectedFormatted].some((formattedValue) =>
