@@ -3,5 +3,6 @@ export type Assertion =
   | 'equal'
   | 'truthy'
   | 'falsy'
+  | 'match'
   | 'is:not'
   | 'not:equal'

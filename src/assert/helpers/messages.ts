@@ -20,6 +20,7 @@ export const messages: Record<Assertion, string> = {
   falsy: `By the looks of it, it's impossible to convert \`value\` to ${format(
     false
   )}:`,
+  match: `In all likelihood, \`value\` does not contain or match \`expected\`:`,
   'is:not': `To go by appearances, \`value\` and \`expected\` are ${bold(
     'strictly'
   )} equal. Both are:`,

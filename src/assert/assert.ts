@@ -7,7 +7,7 @@ import { compare } from './helpers/compare.js'
 import { messages } from './helpers/messages.js'
 import { format } from './helpers/format.js'
 
-type StackTraceEnd = typeof equal | typeof is | typeof truthy | typeof falsy
+type StackTraceEnd = typeof equal | typeof is | typeof truthy | typeof falsy | typeof match
 
 const indent = (string: string): string =>
   string
@@ -99,6 +99,20 @@ export const falsy = <ValueT>(value: ValueT, message?: string) => {
   const diff = `  ${format(value)} converts to ${formatted.true}.`
 
   assert(satisfied, 'falsy', diff, message, falsy)
+}
+
+export const match = (value: string, expected: RegExp | string, message?: string) => {
+  let satisfied: boolean
+
+  if (typeof expected === 'string') {
+    satisfied = value.includes(expected)
+  } else {
+    satisfied = expected.test(value)
+  }
+
+  const diff = `  ${format(value)} does not ${typeof expected === 'string' ? 'contain' : 'match'} ${format(expected)}.`
+
+  assert(satisfied, 'match', diff, message, match)
 }
 
 is.not = <ValueT>(value: ValueT, expected: ValueT, message?: string) => {
