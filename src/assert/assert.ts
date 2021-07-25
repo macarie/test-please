@@ -93,9 +93,9 @@ export const truthy = <ValueT>(value: ValueT, message?: string) => {
   assert(satisfied, 'truthy', diff, message, truthy)
 }
 
-export const falsy = (value: any, message?: string) => {
+export const falsy = <ValueT>(value: ValueT, message?: string) => {
   // eslint-disable-next-line eqeqeq
-  const satisfied = value == false
+  const satisfied = (value as unknown) == false
   const diff = `  ${format(value)} converts to ${formatted.true}.`
 
   assert(satisfied, 'falsy', diff, message, falsy)
