@@ -91,15 +91,16 @@ export const logResults = ({
           assertionError.stack!
         )!
 
-        const filePath = fileURLToPath(fileURL)
-        const relativeFilePath = relative(workingDirectory ?? cwd(), filePath)
+        const filePathWithLineAndColumn = fileURLToPath(fileURL)
+        const relativeFilePathWithLineAndColumn = relative(workingDirectory ?? cwd(), filePathWithLineAndColumn)
+
         const line = Number(lineMatched)
-        const errorLine = getLines(filePath.split(':')[0], line)
+        const errorLine = getLines(filePathWithLineAndColumn.replace(/:\d+:\d+$/, ''), line)
         const linePad = Math.log10(line) + 1
 
         console.log(
           `  ${bold(assertionError.testerTitle)}\n  ${dim(
-            gray(`» ${relativeFilePath}`)
+            gray(`» ${relativeFilePathWithLineAndColumn}`)
           )}\n\n${errorLine
             .map(
               ([lineNumber, content]) => {
