@@ -123,6 +123,10 @@ export const match = (
   assert(satisfied, 'match', diff, message, match)
 }
 
+export const unreachable = (message?: string) => {
+  assert(false, 'unreachable', '', message, unreachable)
+}
+
 is.not = <ValueT>(value: ValueT, expected: ValueT, message?: string) => {
   const satisfied = !Object.is(value, expected)
   const diff: string = indent(format(value))

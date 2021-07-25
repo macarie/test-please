@@ -21,6 +21,7 @@ export const messages: Record<Assertion, string> = {
     false
   )}:`,
   match: `In all likelihood, \`value\` does not contain or match \`expected\`:`,
+  unreachable: `The test has touched a line of code that it was never supposed to.`,
   'is:not': `To go by appearances, \`value\` and \`expected\` are ${bold(
     'strictly'
   )} equal. Both are:`,
