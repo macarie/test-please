@@ -63,7 +63,7 @@ export const is = <ValueT>(
     Array.isArray(expected) ||
     (expected !== null && typeof expected === 'object')
   ) {
-    message = messages.is.replace(/\(.*?\) /g, '').replace(':', '.')
+    message ??= messages.is.replace(/\(.*?\) /g, '').replace(':', '.')
     diff = `  At a glance, \`expected\` is an ${
       Array.isArray(expected) ? 'array' : 'object'
     }; usually, this type is compared to other values using \`assert.equal\`.`
