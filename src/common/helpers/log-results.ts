@@ -87,7 +87,7 @@ export const logResults = ({
     for (const error of errorsToLog) {
       if (error.name === 'AssertionError[TestPlease]') {
         const assertionError = error as AssertionError
-        const [, fileURL, lineMatched] = /\w (.+?:(\d+):\d+)/.exec(
+        const [, fileURL, lineMatched] = /(file:.*?:(\d+):\d+)/.exec(
           assertionError.stack!
         )!
 
@@ -123,12 +123,14 @@ export const logResults = ({
           }\n`
         )
 
-        console.log(assertionError.diff)
+        if (assertionError.diff !== '') {
+          console.log(assertionError.diff)
+          console.log()
+        }
       } else {
         console.error(error)
+        console.log()
       }
-
-      console.log()
     }
 
     if (shouldLogStats) {

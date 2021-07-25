@@ -127,6 +127,39 @@ export const unreachable = (message?: string) => {
   assert(false, 'unreachable', '', message, unreachable)
 }
 
+export const throws = async (
+  fn: () => Promise<void> | void,
+  expected?: string | RegExp | ((error: Error) => boolean),
+  message?: string
+) => {
+  try {
+    await fn()
+    unreachable(
+      message ??
+        'The function `fn` was supposed to throw an error, it looks like it did not.'
+    )
+  } catch (error: unknown) {
+    try {
+      if (error instanceof AssertionError) {
+        throw error
+      } else if (typeof expected === 'string' || expected instanceof RegExp) {
+        match(
+          (error as Error).message,
+          expected,
+          message ??
+            `It looks like the error message does not contain or match \`expected\`:`
+        )
+      } else if (typeof expected === 'function') {
+        is(expected(error as Error), true, message)
+      }
+    } catch (error: unknown) {
+      Error.captureStackTrace(error as Error, throws)
+
+      throw error
+    }
+  }
+}
+
 is.not = <ValueT>(value: ValueT, expected: ValueT, message?: string) => {
   const satisfied = !Object.is(value, expected)
   const diff: string = indent(format(value))
