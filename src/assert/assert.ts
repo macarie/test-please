@@ -38,18 +38,6 @@ const assertionFailed = (
   })
 }
 
-const compareValues = <ValueT>(
-  satisfied: boolean,
-  value: ValueT,
-  expected: ValueT
-): string => {
-  if (satisfied) {
-    return ''
-  }
-
-  return compare(value, expected)
-}
-
 type IsAssertions<ValueT> = {
   equalTo: (expected: ValueT, message?: string) => void
   truthy: (message?: string) => void
@@ -88,7 +76,7 @@ export function is<ValueT>(value: ValueT, expected?: ValueT, message?: string) {
         Array.isArray(expected) ? 'array' : 'object'
       }; usually, this type is compared to other values using \`assert.equal\`.`
     } else {
-      diff = compareValues(satisfied, value, expected)
+      diff = compare(value, expected)
     }
 
     return assertionFailed('is', diff, message, is)
@@ -127,7 +115,7 @@ export function is<ValueT>(value: ValueT, expected?: ValueT, message?: string) {
         return
       }
 
-      const diff: string = compareValues(satisfied, value, expected)
+      const diff: string = compare(value, expected)
 
       return assertionFailed('equal', diff, message, assertions.equalTo)
     },
