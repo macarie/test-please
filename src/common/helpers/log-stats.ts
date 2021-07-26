@@ -1,5 +1,5 @@
 import batch from '@macarie/batch'
-import { dim, magenta, green, yellow, red, white } from 'kleur/colors'
+import { dim, cyan, green, yellow, red, white } from 'kleur/colors'
 
 import type { Results } from '../types/results.js'
 
@@ -46,5 +46,5 @@ export const logStats = ({
   log(failedLabel, failed, red)
   log.flush()
 
-  console.log(dim(magenta(`\n${doneInLabel} ${formatTime(time)}`)))
+  console.log(dim(cyan(`\n${doneInLabel} ${formatTime(time)}`)))
 }
