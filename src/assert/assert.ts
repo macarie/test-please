@@ -1,3 +1,5 @@
+import type { ValueOf } from 'type-fest'
+
 import { dequal } from 'dequal'
 
 import type { Assertion } from './types/assertion.js'
@@ -6,13 +8,6 @@ import { AssertionError } from './helpers/assertion-error.js'
 import { compare } from './helpers/compare.js'
 import { messages } from './helpers/messages.js'
 import { format } from './helpers/format.js'
-
-type StackTraceEnd =
-  | typeof equal
-  | typeof is
-  | typeof truthy
-  | typeof falsy
-  | typeof match
 
 const indent = (string: string): string =>
   string
@@ -24,17 +19,17 @@ const formatted = {
   true: format(true),
 }
 
-const assert = (
-  satisfied: boolean,
+type PossibleAssertions =
+  | ValueOf<IsAssertions<any>>
+  | ValueOf<DoesFunction>
+  | ValueOf<DoesString>
+
+const assertionFailed = (
   assertion: Assertion,
   diff: string,
   message: string | undefined,
-  stackTraceEnd: StackTraceEnd
+  stackTraceEnd: PossibleAssertions
 ) => {
-  if (satisfied) {
-    return
-  }
-
   throw new AssertionError({
     assertion,
     diff,
@@ -55,123 +50,218 @@ const compareValues = <ValueT>(
   return compare(value, expected)
 }
 
-export const is = <ValueT>(
-  value: ValueT,
-  expected: ValueT,
-  message?: string
-) => {
-  const satisfied = Object.is(value, expected)
-
-  let diff: string
-
-  if (
-    Array.isArray(expected) ||
-    (expected !== null && typeof expected === 'object')
-  ) {
-    message ??= messages.is.replace(/\(.*?\) /g, '').replace(':', '.')
-    diff = `  At a glance, \`expected\` is an ${
-      Array.isArray(expected) ? 'array' : 'object'
-    }; usually, this type is compared to other values using \`assert.equal\`.`
-  } else {
-    diff = compareValues(satisfied, value, expected)
+type IsAssertions<ValueT> = {
+  equalTo: (expected: ValueT, message?: string) => void
+  truthy: (message?: string) => void
+  true: (message?: string) => void
+  falsy: (message?: string) => void
+  false: (message?: string) => void
+  not: {
+    (expected: ValueT, message?: string): void
+    equalTo: (expected: ValueT, message?: string) => void
   }
-
-  assert(satisfied, 'is', diff, message, is)
 }
 
-export const equal = <ValueT>(
+export function is<ValueT>(
   value: ValueT,
   expected: ValueT,
   message?: string
-) => {
-  const satisfied = dequal(value, expected)
-  const diff: string = compareValues(satisfied, value, expected)
+): void
+export function is<ValueT>(value: ValueT): IsAssertions<ValueT>
+export function is<ValueT>(value: ValueT, expected?: ValueT, message?: string) {
+  // Assertion is(x, y, msg?)
+  if (arguments.length >= 2) {
+    const satisfied = Object.is(value, expected)
 
-  assert(satisfied, 'equal', diff, message, equal)
-}
-
-export const truthy = <ValueT>(value: ValueT, message?: string) => {
-  // eslint-disable-next-line eqeqeq
-  const satisfied = (value as unknown) == true
-  const diff = `  ${format(value)} converts to ${formatted.false}.`
-
-  assert(satisfied, 'truthy', diff, message, truthy)
-}
-
-export const falsy = <ValueT>(value: ValueT, message?: string) => {
-  // eslint-disable-next-line eqeqeq
-  const satisfied = (value as unknown) == false
-  const diff = `  ${format(value)} converts to ${formatted.true}.`
-
-  assert(satisfied, 'falsy', diff, message, falsy)
-}
-
-export const match = (
-  value: string,
-  expected: RegExp | string,
-  message?: string
-) => {
-  const satisfied: boolean =
-    typeof expected === 'string'
-      ? value.includes(expected)
-      : expected.test(value)
-
-  const diff = `  ${format(value)} does not ${
-    typeof expected === 'string' ? 'contain' : 'match'
-  } ${format(expected)}.`
-
-  assert(satisfied, 'match', diff, message, match)
-}
-
-export const unreachable = (message?: string) => {
-  assert(false, 'unreachable', '', message, unreachable)
-}
-
-export const throws = async (
-  fn: () => Promise<void> | void,
-  expected?: string | RegExp | ((error: Error) => boolean),
-  message?: string
-) => {
-  try {
-    await fn()
-    unreachable(
-      message ??
-        'The function `fn` was supposed to throw an error, it looks like it did not.'
-    )
-  } catch (error: unknown) {
-    try {
-      if (error instanceof AssertionError) {
-        throw error
-      } else if (typeof expected === 'string' || expected instanceof RegExp) {
-        match(
-          (error as Error).message,
-          expected,
-          message ??
-            `It looks like the error message does not contain or match \`expected\`:`
-        )
-      } else if (typeof expected === 'function') {
-        is(expected(error as Error), true, message)
-      }
-    } catch (error: unknown) {
-      Error.captureStackTrace(error as Error, throws)
-
-      throw error
+    if (satisfied) {
+      return
     }
+
+    let diff: string
+
+    if (
+      Array.isArray(expected) ||
+      (expected !== null && typeof expected === 'object')
+    ) {
+      message ??= messages.is.replace(/\(.*?\) /g, '').replace(':', '.')
+      diff = `  At a glance, \`expected\` is an ${
+        Array.isArray(expected) ? 'array' : 'object'
+      }; usually, this type is compared to other values using \`assert.equal\`.`
+    } else {
+      diff = compareValues(satisfied, value, expected)
+    }
+
+    return assertionFailed('is', diff, message, is)
   }
-}
 
-is.not = <ValueT>(value: ValueT, expected: ValueT, message?: string) => {
-  const satisfied = !Object.is(value, expected)
-  const diff: string = indent(format(value))
+  // Assertion is(x)[assertion](y, msg?)
+  const not = function (value: ValueT, message?: string) {
+    const satisfied = !Object.is(value, expected)
 
-  assert(satisfied, 'is:not', diff, message, is.not)
-}
+    if (satisfied) {
+      return
+    }
 
-export const not = {
-  equal: <ValueT>(value: ValueT, expected: ValueT, message?: string) => {
-    const satisfied = !dequal(value, expected)
     const diff: string = indent(format(value))
 
-    assert(satisfied, 'not:equal', diff, message, not.equal)
-  },
+    return assertionFailed('is:not', diff, message, assertions.not)
+  }
+
+  not.equalTo = function (expected: ValueT, message?: string) {
+    const satisfied = !dequal(value, expected)
+
+    if (satisfied) {
+      return
+    }
+
+    const diff: string = indent(format(value))
+
+    return assertionFailed('not:equal', diff, message, assertions.not.equalTo)
+  }
+
+  const assertions: IsAssertions<ValueT> = {
+    equalTo(expected: ValueT, message?: string) {
+      const satisfied = dequal(value, expected)
+
+      if (satisfied) {
+        return
+      }
+
+      const diff: string = compareValues(satisfied, value, expected)
+
+      return assertionFailed('equal', diff, message, assertions.equalTo)
+    },
+    truthy(message?: string) {
+      // eslint-disable-next-line eqeqeq
+      const satisfied = (value as unknown) == true
+
+      if (satisfied) {
+        return
+      }
+
+      const diff = `  ${format(value)} converts to ${formatted.false}.`
+
+      return assertionFailed('truthy', diff, message, assertions.truthy)
+    },
+    true(message?: string) {
+      const satisfied = (value as unknown) === true
+
+      if (satisfied) {
+        return
+      }
+
+      const diff = `  The received value is ${format(value)}.`
+
+      return assertionFailed('true', diff, message, assertions.true)
+    },
+    falsy(message?: string) {
+      // eslint-disable-next-line eqeqeq
+      const satisfied = (value as unknown) == false
+
+      if (satisfied) {
+        return
+      }
+
+      const diff = `  ${format(value)} converts to ${formatted.true}.`
+
+      return assertionFailed('falsy', diff, message, assertions.falsy)
+    },
+    false(message?: string) {
+      const satisfied = (value as unknown) === false
+
+      if (satisfied) {
+        return
+      }
+
+      const diff = `  The received value is ${format(value)}.`
+
+      return assertionFailed('false', diff, message, assertions.false)
+    },
+    not,
+  }
+
+  return assertions
+}
+
+export function unreachable(message?: string) {
+  assertionFailed('unreachable', '', message, unreachable)
+}
+
+type DoesFunction = {
+  throw: (
+    expected?: string | RegExp | ((error: Error) => boolean),
+    message?: string
+  ) => Promise<void>
+}
+
+type DoesString = {
+  match: (expected: string | RegExp, message?: string) => void
+}
+
+export function does(fn: () => Promise<void> | void): DoesFunction
+export function does(value: string): DoesString
+export function does(valueOrFn: string | (() => Promise<void> | void)) {
+  if (typeof valueOrFn === 'function') {
+    const doesFunction: DoesFunction = {
+      async throw(
+        expected?: string | RegExp | ((error: Error) => boolean),
+        message?: string
+      ) {
+        try {
+          await valueOrFn()
+          unreachable(
+            message ??
+              'The function `fn` was supposed to throw an error, it looks like it did not.'
+          )
+        } catch (error: unknown) {
+          try {
+            if (error instanceof AssertionError) {
+              throw error
+            } else if (
+              typeof expected === 'string' ||
+              expected instanceof RegExp
+            ) {
+              does((error as Error).message).match(
+                expected,
+                message ??
+                  `It looks like the error message does not contain or match \`expected\`:`
+              )
+            } else if (typeof expected === 'function') {
+              is(expected(error as Error)).true(
+                message ??
+                  `The \`expected\` function should return ${formatted.true} if everything is okay.`
+              )
+            }
+          } catch (error: unknown) {
+            Error.captureStackTrace(error as Error, this.throw)
+
+            throw error
+          }
+        }
+      },
+    }
+
+    return doesFunction
+  }
+
+  const doesString: DoesString = {
+    match(expected: string | RegExp, message?: string) {
+      const satisfied: boolean =
+        typeof expected === 'string'
+          ? valueOrFn.includes(expected)
+          : expected.test(valueOrFn)
+
+      if (satisfied) {
+        return
+      }
+
+      const diff = `  ${format(valueOrFn)} does not ${
+        typeof expected === 'string' ? 'contain' : 'match'
+      } ${format(expected)}.`
+
+      return assertionFailed('match', diff, message, this.match)
+    },
+  }
+
+  return doesString
 }
