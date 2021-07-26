@@ -38,6 +38,7 @@ const runTest = async (
           shouldLogStats: false,
           results,
           suiteName,
+          workingDirectory,
         })
       }
     )
