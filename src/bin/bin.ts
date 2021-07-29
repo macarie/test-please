@@ -2,6 +2,7 @@
 
 import { cwd } from 'node:process'
 import { resolve as resolvePath } from 'node:path'
+import { cpus } from 'node:os'
 
 import sade from 'sade'
 import { totalist } from 'totalist'
@@ -13,6 +14,7 @@ type CLIOptions = {
   dir: string | string[]
   pattern: string | string[]
   ignore: string | string[]
+  concurrency: number
 }
 
 const toRegExp = (input: string) => new RegExp(input, 'i')
@@ -75,6 +77,11 @@ sade('test-please', true)
     '-i, --ignore',
     'A pattern used to ignore files, `node_modules` is always ignored'
   )
+  .option(
+    '-c, --concurrency',
+    'The maximum number of tests running at the same time; by default the number of logical CPU cores',
+    cpus().length
+  )
   .action(async (options: CLIOptions) => {
     const dirs: string[] = getDir(options.dir)
     const patterns: RegExp[] = getPattern(options.pattern, options.dir)
@@ -97,6 +104,7 @@ sade('test-please', true)
 
     try {
       await exec({
+        concurrency: options.concurrency,
         tests,
         workingDirectory: options.cwd,
       })
