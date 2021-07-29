@@ -2,10 +2,15 @@ import { Worker } from 'node:worker_threads'
 import { resolve as resolvePath, relative as relativePath } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { cwd } from 'node:process'
+import { cpus } from 'node:os'
+
+import pMap from 'p-map'
+
 import type { Results } from '../common/types/results.js'
 
 import { logResults } from '../common/helpers/log-results.js'
 import { logStats } from '../common/helpers/log-stats.js'
+
 import type { Options } from './types/options.js'
 
 const runTest = async (
@@ -54,17 +59,21 @@ const runTest = async (
   })
 
 export const exec = async ({
-  workingDirectory = cwd(),
+  concurrency = cpus().length,
   tests,
+  workingDirectory = cwd(),
 }: Options): Promise<void> => {
+  console.log(concurrency)
   const startTime = performance.now()
-
-  const results: Array<Results['stats']> = await Promise.all(
-    tests.map(async (test) =>
+  const results: Array<Results['stats']> = await pMap(
+    tests,
+    async (test) =>
       runTest(resolvePath(workingDirectory, test), {
         workingDirectory,
-      })
-    )
+      }),
+    {
+      concurrency,
+    }
   )
 
   const endTime = performance.now()

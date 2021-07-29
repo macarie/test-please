@@ -1,4 +1,5 @@
 export interface Options {
-  workingDirectory: string
+  concurrency: number
   tests: string[]
+  workingDirectory: string
 }
