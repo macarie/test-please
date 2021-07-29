@@ -79,7 +79,7 @@ sade('test-please', true)
   )
   .option(
     '-c, --concurrency',
-    'The maximum number of tests running at the same time (default: CPU cores)',
+    'The maximum number of tests running at the same time; by default the number of logical CPU cores',
     cpus().length
   )
   .action(async (options: CLIOptions) => {
