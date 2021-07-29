@@ -1,8 +1,13 @@
 import { Worker } from 'node:worker_threads'
-import { resolve as resolvePath, relative as relativePath } from 'node:path'
+import {
+  resolve as resolvePath,
+  relative as relativePath,
+  parse as parsePath,
+} from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { cwd } from 'node:process'
 import { cpus } from 'node:os'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import pMap from 'p-map'
 
@@ -22,7 +27,18 @@ const runTest = async (
   }
 ): Promise<Results['stats']> =>
   new Promise((resolve) => {
-    const worker = new Worker(test)
+    const worker = new Worker(test, {
+      execArgv: [
+        '--no-warnings',
+        '--experimental-loader',
+        pathToFileURL(
+          resolvePath(
+            parsePath(fileURLToPath(import.meta.url)).dir,
+            '../loader/loader-experimental.js'
+          )
+        ).toString(),
+      ],
+    })
     const stats: Results['stats'] = {
       total: 0,
       passed: 0,
