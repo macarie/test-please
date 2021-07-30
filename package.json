@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/client/client.js"
+    ".": "./dist/client/client.js",
+    "./experimental-loader-v16": "./dist/loader/experimental-loader-v16.ts"
   },
   "bin": {
     "test-please": "./dist/bin/bin.js"
