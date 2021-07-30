@@ -1,13 +1,10 @@
+import type { WorkerOptions } from 'node:worker_threads'
+
 import { Worker } from 'node:worker_threads'
-import {
-  resolve as resolvePath,
-  relative as relativePath,
-  parse as parsePath,
-} from 'node:path'
+import { resolve as resolvePath, relative as relativePath } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { cwd } from 'node:process'
 import { cpus } from 'node:os'
-import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import pMap from 'p-map'
 
@@ -21,24 +18,15 @@ import type { Options } from './types/options.js'
 const runTest = async (
   test: Options['tests'][0],
   {
+    workerOptions,
     workingDirectory,
   }: {
+    workerOptions: WorkerOptions
     workingDirectory: string
   }
 ): Promise<Results['stats']> =>
   new Promise((resolve) => {
-    const worker = new Worker(test, {
-      execArgv: [
-        '--no-warnings',
-        '--experimental-loader',
-        pathToFileURL(
-          resolvePath(
-            parsePath(fileURLToPath(import.meta.url)).dir,
-            '../loader/loader-experimental.js'
-          )
-        ).toString(),
-      ],
-    })
+    const worker = new Worker(test, workerOptions)
     const stats: Results['stats'] = {
       total: 0,
       passed: 0,
@@ -76,15 +64,25 @@ const runTest = async (
 
 export const exec = async ({
   concurrency = cpus().length,
+  experimentalLoader,
   tests,
   workingDirectory = cwd(),
 }: Options): Promise<void> => {
   console.log(concurrency)
+  const execArgv: WorkerOptions['execArgv'] = ['--no-warnings']
+
+  if (experimentalLoader) {
+    execArgv.push('--experimental-loader', experimentalLoader)
+  }
+
   const startTime = performance.now()
   const results: Array<Results['stats']> = await pMap(
     tests,
     async (test) =>
       runTest(resolvePath(workingDirectory, test), {
+        workerOptions: {
+          execArgv,
+        },
         workingDirectory,
       }),
     {

@@ -12,6 +12,7 @@ import { exec } from '../runner/runner.js'
 type CLIOptions = {
   cwd: string
   dir: string | string[]
+  'experimental-loader': string
   pattern: string | string[]
   ignore: string | string[]
   concurrency: number
@@ -82,6 +83,10 @@ sade('test-please', true)
     'The maximum number of tests running at the same time; by default the number of logical CPU cores',
     cpus().length
   )
+  .option(
+    '--experimental-loader',
+    'A module that customizes the default module resolution'
+  )
   .action(async (options: CLIOptions) => {
     const dirs: string[] = getDir(options.dir)
     const patterns: RegExp[] = getPattern(options.pattern, options.dir)
@@ -105,6 +110,7 @@ sade('test-please', true)
     try {
       await exec({
         concurrency: options.concurrency,
+        experimentalLoader: options['experimental-loader'],
         tests,
         workingDirectory: options.cwd,
       })
