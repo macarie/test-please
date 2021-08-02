@@ -22,8 +22,9 @@ type DefaultResolve = (
   defaultResolve: DefaultResolve
 ) => Resolve
 
-const allowedSpecifiers: RegExp[] = [/^file:/, /^\.{1,2}[/\\]/]
-const extensionsToLookFor = <const>['ts', 'tsx', 'jsx']
+const transformableFileExtensions = <const>['ts', 'tsx', 'jsx']
+const resolvableSpecifiers: RegExp[] = [/^file:/, /^\.{1,2}[/\\]/]
+const resolvableExtensions: string[] = [...transformableFileExtensions, 'js']
 
 export const resolve = async (
   specifier: ResolveSpecifier,
@@ -32,28 +33,37 @@ export const resolve = async (
 ): Promise<Resolve> => {
   const { parentURL = null } = context
 
+  // Use the custom resolver when the specifier matches one of the accepted ones
   if (
-    allowedSpecifiers.some((allowedSpecifier) =>
-      allowedSpecifier.test(specifier)
+    resolvableSpecifiers.some((resolvableSpecifier) =>
+      resolvableSpecifier.test(specifier)
+    ) &&
+    resolvableExtensions.some((resolvableExtension) =>
+      specifier.endsWith(resolvableExtension)
     )
   ) {
-    const filePath =
+    // If parentURL is null it means that the file is the entry-point
+    const resolvedFilePath =
       parentURL === null
         ? fileURLToPath(specifier)
         : resolvePath(parsePath(fileURLToPath(parentURL)).dir, specifier)
-    let fileToTranspile = filePath
 
+    // Save the path of the file to transpile, start with the imported file by default
+    let fileToTranspile = resolvedFilePath
+
+    // Try to find a file with a non-standard extension only if the imported
+    //  script is not the entry-point (these already have the right file)
     if (parentURL !== null) {
-      const fileExt = parsePath(filePath).ext
+      const fileExt = parsePath(resolvedFilePath).ext
 
-      if (fileExt === '.js' || fileExt === '') {
-        const fileWithoutExtension =
-          fileExt === '.js'
-            ? fileToTranspile.replace(/\.js$/, '')
-            : fileToTranspile
-        const fileAndLoader: string | undefined = (
+      // Try to find a file with a different extension only if the imported one is
+      //  a JS file. Using .js to import .ts files was a bright idea TypeScript
+      //  team! So bright that I can't even see right now!
+      if (fileExt === '.js') {
+        const fileWithoutExtension = fileToTranspile.replace(/\.js$/, '')
+        const sourceFilePath: string | undefined = (
           await Promise.all(
-            extensionsToLookFor.map(async (extension) => {
+            transformableFileExtensions.map(async (extension) => {
               const fileToLookFor = `${fileWithoutExtension}.${extension}`
 
               try {
@@ -65,10 +75,10 @@ export const resolve = async (
               }
             })
           )
-        ).find((n) => n !== null)!
+        ).find((fileWithExtension) => fileWithExtension !== null)!
 
-        if (fileAndLoader) {
-          fileToTranspile = fileAndLoader
+        if (sourceFilePath) {
+          fileToTranspile = sourceFilePath
         }
       }
     }
@@ -100,10 +110,12 @@ export const getFormat = async (
   context: FormatContext,
   defaultGetFormat: DefaultGetFormat
 ): Promise<Format> => {
-  const recognizedExtension = extensionsToLookFor.find((extension) =>
+  // Check if the file's extension is one of the recognized one
+  const recognizedExtension = transformableFileExtensions.find((extension) =>
     url.endsWith(extension)
   )
 
+  // If it is one of the known ones, assume the file is a module
   if (recognizedExtension) {
     return {
       format: 'module',
@@ -138,11 +150,17 @@ export const transformSource = async (
   defaultTransformSource: DefaultTransformSource
 ): Promise<Transform> => {
   const { url } = context
-  const loader = extensionsToLookFor.find(
+  // Check if the file is not inside the node_modules folder and
+  //  find if its extension is one of the recognized ones
+  // The extensions array overlaps with esbuild's loader option,
+  //  so that's what it'll be used for
+  const loader = transformableFileExtensions.find(
     (extension) => !url.includes('node_modules') && url.endsWith(extension)
   )
 
-  if (loader) {
+  // If a file that matches the rules is found, transpile it on the
+  //  fly using esbuild
+  if (loader !== undefined) {
     const transformResult = await transform(
       ArrayBuffer.isView(source) || source instanceof SharedArrayBuffer
         ? textDecoder.decode(source)
