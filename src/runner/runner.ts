@@ -1,10 +1,10 @@
 import type { WorkerOptions } from 'node:worker_threads'
 
 import { Worker } from 'node:worker_threads'
-import { resolve as resolvePath, relative as relativePath } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { cwd } from 'node:process'
 import { cpus } from 'node:os'
+import path from 'node:path'
 
 import pMap from 'p-map'
 
@@ -14,6 +14,8 @@ import { logResults } from '../common/helpers/log-results.js'
 import { logStats } from '../common/helpers/log-stats.js'
 
 import type { Options } from './types/options.js'
+
+const { resolve: resolvePath, relative: relativePath } = path
 
 const runTest = async (
   test: Options['tests'][0],
@@ -72,6 +74,15 @@ export const exec = async ({
   const execArgv: WorkerOptions['execArgv'] = ['--no-warnings']
 
   if (experimentalLoader) {
+    // TODO: Monkeypatch until https://github.com/nodejs/node/issues/39124 is not resolved
+    const originaleExtname = path.extname
+    path.extname = (filename) =>
+      filename.endsWith('ts') ||
+      filename.endsWith('tsx') ||
+      filename.endsWith('jsx')
+        ? '.js'
+        : originaleExtname(filename)
+
     execArgv.push('--experimental-loader', experimentalLoader)
   }
 
