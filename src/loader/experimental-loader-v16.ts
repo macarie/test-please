@@ -1,9 +1,11 @@
 import { resolve as resolvePath, parse as parsePath } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { access } from 'node:fs/promises'
+import { promises } from 'node:fs'
 import { TextDecoder } from 'node:util'
 
 import { transform } from 'esbuild'
+
+const { access } = promises
 
 type ResolveSpecifier = string
 
