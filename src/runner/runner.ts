@@ -9,6 +9,7 @@ import path from 'node:path'
 import pMap from 'p-map'
 
 import type { Results } from '../common/types/results.js'
+import type { Stats } from '../common/types/stats.js'
 
 import { logResults } from '../common/helpers/log-results.js'
 import { logStats } from '../common/helpers/log-stats.js'
@@ -69,7 +70,7 @@ export const exec = async ({
   experimentalLoader,
   tests,
   workingDirectory = cwd(),
-}: Options): Promise<void> => {
+}: Options): Promise<Stats> => {
   const execArgv: WorkerOptions['execArgv'] = ['--no-warnings']
 
   if (experimentalLoader) {
@@ -103,8 +104,8 @@ export const exec = async ({
   const endTime = performance.now()
 
   // eslint-disable-next-line unicorn/no-array-reduce
-  const stats: Results['stats'] = results.reduce(
-    (totalStats, currentStats) => {
+  const stats: Stats = results.reduce(
+    (totalStats: Stats, currentStats: Results['stats']) => {
       totalStats.total += currentStats.total
       totalStats.passed += currentStats.passed
       totalStats.failed += currentStats.failed
@@ -117,11 +118,11 @@ export const exec = async ({
       passed: 0,
       failed: 0,
       skipped: 0,
+      time: endTime - startTime,
     }
   )
 
-  logStats({
-    ...stats,
-    time: endTime - startTime,
-  })
+  logStats(stats)
+
+  return stats
 }

@@ -128,12 +128,16 @@ sade('test-please', true)
     )
 
     try {
-      await exec({
+      const stats = await exec({
         concurrency: options.concurrency,
         experimentalLoader: options['experimental-loader'],
         tests,
         workingDirectory: options.cwd,
       })
+
+      if (stats.failed > 0) {
+        process.exit(1)
+      }
     } catch {
       process.exit(1)
     }
