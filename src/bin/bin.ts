@@ -24,6 +24,10 @@ const defaults = {
   dir: '.',
   patternWithDir: [/\.m?js$/i],
   patternWithoutDir: [/(^(tests?|__tests?__)[\\/].+|[-.](test|spec)?)\.js$/i],
+  patternWithDirWithLoader: [/\.(mjs|[tj]sx?)$/i],
+  patternWithoutDirWithLoader: [
+    /(^(tests?|__tests?__)[\\/].+|[-.](test|spec)?)\.(mjs|[tj]sx?)$/i,
+  ],
   ignoredPaths: [/node_modules/i],
 }
 
@@ -35,10 +39,22 @@ const getDir = (dir: string | string[] = defaults.dir) => {
   return [dir]
 }
 
-const getPattern = (pattern: string | string[], dir?: string | string[]) => {
+const getPattern = (
+  pattern: string | string[],
+  dir?: string | string[],
+  loader?: string
+) => {
   if (pattern === undefined) {
     if (dir === undefined) {
+      if (loader !== undefined) {
+        return defaults.patternWithoutDirWithLoader
+      }
+
       return defaults.patternWithoutDir
+    }
+
+    if (loader !== undefined) {
+      return defaults.patternWithDirWithLoader
     }
 
     return defaults.patternWithDir
@@ -89,7 +105,11 @@ sade('test-please', true)
   )
   .action(async (options: CLIOptions) => {
     const dirs: string[] = getDir(options.dir)
-    const patterns: RegExp[] = getPattern(options.pattern, options.dir)
+    const patterns: RegExp[] = getPattern(
+      options.pattern,
+      options.dir,
+      options['experimental-loader']
+    )
     const ignored: RegExp[] = getIgnored(options.ignore)
 
     const tests: string[] = []
