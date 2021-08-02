@@ -70,7 +70,6 @@ export const exec = async ({
   tests,
   workingDirectory = cwd(),
 }: Options): Promise<void> => {
-  console.log(concurrency)
   const execArgv: WorkerOptions['execArgv'] = ['--no-warnings']
 
   if (experimentalLoader) {
