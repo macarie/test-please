@@ -16,7 +16,7 @@
   "scripts": {
     "compile:clean": "rimraf dist",
     "compile:declaration": "tsc --emitdeclarationonly",
-    "compile:transpile": "esbuild --target=esnext --outdir=dist src/**/*.ts src/**/**/*.ts",
+    "compile:transpile": "esbuild --target=es2019 --outdir=dist src/**/*.ts src/**/**/*.ts",
     "compile:library": "run-p -s compile:declaration compile:transpile",
     "compile": "run-s -s compile:clean compile:library",
     "lint:tsc": "tsc --noemit",
