@@ -1,8 +1,10 @@
+import type { WorkerOptions } from 'node:worker_threads'
+
 import { Worker } from 'node:worker_threads'
-import { resolve as resolvePath, relative as relativePath } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { cwd } from 'node:process'
 import { cpus } from 'node:os'
+import path from 'node:path'
 
 import pMap from 'p-map'
 
@@ -13,16 +15,20 @@ import { logStats } from '../common/helpers/log-stats.js'
 
 import type { Options } from './types/options.js'
 
+const { resolve: resolvePath, relative: relativePath } = path
+
 const runTest = async (
   test: Options['tests'][0],
   {
+    workerOptions,
     workingDirectory,
   }: {
+    workerOptions: WorkerOptions
     workingDirectory: string
   }
 ): Promise<Results['stats']> =>
   new Promise((resolve) => {
-    const worker = new Worker(test)
+    const worker = new Worker(test, workerOptions)
     const stats: Results['stats'] = {
       total: 0,
       passed: 0,
@@ -60,15 +66,34 @@ const runTest = async (
 
 export const exec = async ({
   concurrency = cpus().length,
+  experimentalLoader,
   tests,
   workingDirectory = cwd(),
 }: Options): Promise<void> => {
   console.log(concurrency)
+  const execArgv: WorkerOptions['execArgv'] = ['--no-warnings']
+
+  if (experimentalLoader) {
+    // TODO: Monkeypatch until https://github.com/nodejs/node/issues/39124 is not resolved
+    const originaleExtname = path.extname
+    path.extname = (filename) =>
+      filename.endsWith('ts') ||
+      filename.endsWith('tsx') ||
+      filename.endsWith('jsx')
+        ? '.js'
+        : originaleExtname(filename)
+
+    execArgv.push('--experimental-loader', experimentalLoader)
+  }
+
   const startTime = performance.now()
   const results: Array<Results['stats']> = await pMap(
     tests,
     async (test) =>
       runTest(resolvePath(workingDirectory, test), {
+        workerOptions: {
+          execArgv,
+        },
         workingDirectory,
       }),
     {
