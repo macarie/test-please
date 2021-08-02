@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     ".": "./dist/client/client.js",
+    "./assert": "./dist/assert/assert.js",
     "./experimental-loader-v12": "./dist/loader/experimental-loader-v12.js"
   },
   "bin": {
