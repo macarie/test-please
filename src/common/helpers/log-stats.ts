@@ -1,7 +1,7 @@
 import batch from '@macarie/batch'
 import { dim, cyan, green, yellow, red, white } from 'kleur/colors'
 
-import type { Results } from '../types/results.js'
+import type { Stats } from '../types/stats.js'
 
 type LogArguments = [string, number, (input: string) => string]
 
@@ -31,13 +31,7 @@ const skippedLabel = '  Skipped:'
 const failedLabel = '  Failed:'
 const doneInLabel = '  Done in'
 
-export const logStats = ({
-  failed,
-  skipped,
-  passed,
-  time,
-  total,
-}: { time: number } & Results['stats']) => {
+export const logStats = ({ failed, skipped, passed, time, total }: Stats) => {
   console.log()
 
   log(totalLabel, total, white)
