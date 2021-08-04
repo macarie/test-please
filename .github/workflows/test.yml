@@ -33,4 +33,3 @@ jobs:
           version: 6.11.5
       - run: pnpm install
       - run: pnpm run lint
-      - run: pnpm run test
