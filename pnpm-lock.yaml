@@ -7,7 +7,7 @@ specifiers:
   '@types/sade': ^1.7.3
   dequal: ^2.0.2
   diff: ^5.0.0
-  esbuild: ^0.12.17
+  esbuild: ^0.12.18
   kleur: ^4.1.4
   npm-run-all: ^4.1.5
   p-map: ^5.1.0
@@ -22,7 +22,6 @@ dependencies:
   '@macarie/batch': 1.2.1
   dequal: 2.0.2
   diff: 5.0.0
-  esbuild: 0.12.17
   kleur: 4.1.4
   p-map: 5.1.0
   sade: 1.7.4
@@ -32,6 +31,7 @@ devDependencies:
   '@types/diff': 5.0.1
   '@types/node': 16.4.11
   '@types/sade': 1.7.3
+  esbuild: 0.12.18
   npm-run-all: 4.1.5
   rimraf: 3.0.2
   type-fest: 0.21.3
@@ -1134,11 +1134,11 @@ packages:
       is-symbol: 1.0.4
     dev: true
 
-  /esbuild/0.12.17:
-    resolution: {integrity: sha512-GshKJyVYUnlSXIZj/NheC2O0Kblh42CS7P1wJyTbbIHevTG4jYMS9NNw8EOd8dDWD0dzydYHS01MpZoUcQXB4g==}
+  /esbuild/0.12.18:
+    resolution: {integrity: sha512-arWhBQSy+oiBAp8VRRCFvAU+3jyf0gGacABLO3haMHboXCDjzq4WUqyQklst2XRuFS8MXgap+9uvODqj9Iygpg==}
     hasBin: true
     requiresBuild: true
-    dev: false
+    dev: true
 
   /escalade/3.1.1:
     resolution: {integrity: sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw==}
