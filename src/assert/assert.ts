@@ -236,10 +236,16 @@ export function does(valueOrFn: string | (() => Promise<void> | void)) {
           try {
             await valueOrFn()
           } catch {
-            unreachable(
-              message ??
-                'The function `fn` was not supposed to throw an error, it looks like it did.'
-            )
+            try {
+              unreachable(
+                message ??
+                  'The function `fn` was not supposed to throw an error, it looks like it did.'
+              )
+            } catch (error: unknown) {
+              Error.captureStackTrace(error as Error, this.throw)
+
+              throw error
+            }
           }
         },
       },
