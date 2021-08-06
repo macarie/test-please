@@ -19,6 +19,10 @@
     }
   },
   "sideEffects": false,
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
+  ],
   "scripts": {
     "compile:clean": "rimraf dist",
     "compile:declaration": "tsc --emitdeclarationonly",
