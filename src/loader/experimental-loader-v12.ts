@@ -170,6 +170,7 @@ export const transformSource = async (
       {
         loader,
         format: 'esm',
+        sourcefile: fileURLToPath(url),
         sourcemap: 'inline',
         target: 'es2019',
       }
