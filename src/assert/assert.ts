@@ -21,7 +21,8 @@ const formatted = {
 
 type PossibleAssertions =
   | ValueOf<IsAssertions<any>>
-  | ValueOf<DoesFunction>
+  | DoesFunction['throw']
+  | DoesFunction['not']['throw']
   | ValueOf<DoesString>
 
 const assertionFailed = (
@@ -180,6 +181,9 @@ type DoesFunction = {
     expected?: string | RegExp | ((error: Error) => boolean),
     message?: string
   ) => Promise<void>
+  not: {
+    throw: (message?: string) => Promise<void>
+  }
 }
 
 type DoesString = {
@@ -226,6 +230,18 @@ export function does(valueOrFn: string | (() => Promise<void> | void)) {
             throw error
           }
         }
+      },
+      not: {
+        async throw(message?: string) {
+          try {
+            await valueOrFn()
+          } catch {
+            unreachable(
+              message ??
+                'The function `fn` was not supposed to throw an error, it looks like it did.'
+            )
+          }
+        },
       },
     }
 
