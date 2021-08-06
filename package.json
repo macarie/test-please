@@ -13,6 +13,11 @@
     "test-please": "./dist/bin/bin.js"
   },
   "types": "./dist/client/client.d.ts",
+  "typesVersions": {
+    "*": {
+      "assert": ["dist/assert/assert.d.ts"]
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "compile:clean": "rimraf dist",
