@@ -1,5 +1,5 @@
 import { suite } from 'test-please'
-import { is, does } from 'test-please/assert'
+import { is, does, unreachable } from 'test-please/assert'
 import stripAnsi from 'strip-ansi'
 
 import { is as $is } from '../../src/assert/assert.js'
@@ -119,6 +119,8 @@ isTests('`is(x, y)` should not throw if valid', async () => {
 isTests('`is(x, y)` should throw if invalid', () => {
   try {
     $is(true, false)
+
+    unreachable()
   } catch (error: unknown) {
     checkError('is', '', 'Test', diffChecker('  --- true\n  +++ false'))(error)
   }
