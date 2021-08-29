@@ -2,7 +2,7 @@ import { suite } from 'test-please'
 import { is, does } from 'test-please/assert'
 import stripAnsi from 'strip-ansi'
 
-import { is as $is, does as $does } from '../../src/assert/assert.js'
+import { is as $is } from '../../src/assert/assert.js'
 import { AssertionError } from '../../src/assert/helpers/assertion-error.js'
 
 const checkError =
@@ -28,9 +28,6 @@ const diffChecker =
   (expectedDiff: string) =>
   (actualDiff: string): boolean =>
     expectedDiff === stripAnsi(actualDiff)
-const logError = (error: unknown) => {
-  console.log(error)
-}
 
 // Testing AssertionError
 const assertionErrorTests = suite('AssertionError')
