@@ -60,58 +60,22 @@ isTests('`is(x, y)` should be a function', () => {
 })
 
 isTests('`is(x, y)` should not throw if valid', async () => {
-  // Number
-  await does(() => {
-    $is(1, 1)
-  }).not.throw()
-
-  // Boolean
-  await does(() => {
-    $is(true, true)
-  }).not.throw()
-
-  // String
-  await does(() => {
-    $is('a', 'a')
-  }).not.throw()
-
-  // Object
   const o = {}
-  await does(() => {
-    $is(o, o)
-  }).not.throw()
-
-  // Array
   const a = []
-  await does(() => {
-    $is(a, a)
-  }).not.throw()
-
-  // Symbol
   const s = Symbol('symbol')
-  await does(() => {
-    $is(s, s)
-  }).not.throw()
-
-  // Null
-  await does(() => {
-    $is(null, null)
-  }).not.throw()
-
-  // Undefined
-  await does(() => {
-    $is(undefined, undefined)
-  }).not.throw()
-
-  // BigInt
   const b1 = BigInt('0x1fffffffffffff')
   const b2 = BigInt('0x1fffffffffffff')
-  await does(() => {
-    $is(b1, b2)
-  }).not.throw()
 
-  // NaN
   await does(() => {
+    $is(1, 1)
+    $is(true, true)
+    $is('a', 'a')
+    $is(o, o)
+    $is(a, a)
+    $is(s, s)
+    $is(null, null)
+    $is(undefined, undefined)
+    $is(b1, b2)
     $is(Number.NaN, Number.NaN)
   }).not.throw()
 })
@@ -180,60 +144,24 @@ isEqual('`is(x).equalTo(y)` should be a function', () => {
 })
 
 isEqual('`is(x).equalTo(y)` shuold not throw if valid', async () => {
-  // Number
-  await does(() => {
-    $is(1).equalTo(1)
-  }).not.throw()
-
-  // Boolean
-  await does(() => {
-    $is(true).equalTo(true)
-  }).not.throw()
-
-  // String
-  await does(() => {
-    $is('a').equalTo('a')
-  }).not.throw()
-
-  // Object
   const o = { foo: [1, 2, 3] }
-  await does(() => {
-    $is(o).equalTo(o)
-    $is(o).equalTo({ foo: [1, 2, 3] })
-  }).not.throw()
-
-  // Array
   const a = [1, 2, 3]
-  await does(() => {
-    $is(a).equalTo(a)
-    $is(a).equalTo([1, 2, 3])
-  }).not.throw()
-
-  // Symbol
   const s = Symbol('symbol')
-  await does(() => {
-    $is(s).equalTo(s)
-  }).not.throw()
-
-  // Null
-  await does(() => {
-    $is(null).equalTo(null)
-  }).not.throw()
-
-  // Undefined
-  await does(() => {
-    $is(undefined).equalTo(undefined)
-  }).not.throw()
-
-  // BigInt
   const b1 = BigInt('0x1fffffffffffff')
   const b2 = BigInt('0x1fffffffffffff')
-  await does(() => {
-    $is(b1).equalTo(b2)
-  }).not.throw()
 
-  // NaN
   await does(() => {
+    $is(1).equalTo(1)
+    $is(true).equalTo(true)
+    $is('a').equalTo('a')
+    $is(o).equalTo(o)
+    $is(o).equalTo({ foo: [1, 2, 3] })
+    $is(a).equalTo(a)
+    $is(a).equalTo([1, 2, 3])
+    $is(s).equalTo(s)
+    $is(null).equalTo(null)
+    $is(undefined).equalTo(undefined)
+    $is(b1).equalTo(b2)
     $is(Number.NaN).equalTo(Number.NaN)
   }).not.throw()
 })
