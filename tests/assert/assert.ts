@@ -171,3 +171,116 @@ isTests('`is(x, y)` should throw with a custom message if passed', () => {
 })
 
 void isTests.run()
+
+// Testing is(x).equalTo(y)
+const isEqual = suite('is(x).equalTo(y)')
+
+isEqual('`is(x).equalTo(y)` should be a function', () => {
+  is(typeof $is(0).equalTo, 'function')
+})
+
+isEqual('`is(x).equalTo(y)` shuold not throw if valid', async () => {
+  // Number
+  await does(() => {
+    $is(1).equalTo(1)
+  }).not.throw()
+
+  // Boolean
+  await does(() => {
+    $is(true).equalTo(true)
+  }).not.throw()
+
+  // String
+  await does(() => {
+    $is('a').equalTo('a')
+  }).not.throw()
+
+  // Object
+  const o = { foo: [1, 2, 3] }
+  await does(() => {
+    $is(o).equalTo(o)
+    $is(o).equalTo({ foo: [1, 2, 3] })
+  }).not.throw()
+
+  // Array
+  const a = [1, 2, 3]
+  await does(() => {
+    $is(a).equalTo(a)
+    $is(a).equalTo([1, 2, 3])
+  }).not.throw()
+
+  // Symbol
+  const s = Symbol('symbol')
+  await does(() => {
+    $is(s).equalTo(s)
+  }).not.throw()
+
+  // Null
+  await does(() => {
+    $is(null).equalTo(null)
+  }).not.throw()
+
+  // Undefined
+  await does(() => {
+    $is(undefined).equalTo(undefined)
+  }).not.throw()
+
+  // BigInt
+  const b1 = BigInt('0x1fffffffffffff')
+  const b2 = BigInt('0x1fffffffffffff')
+  await does(() => {
+    $is(b1).equalTo(b2)
+  }).not.throw()
+
+  // NaN
+  await does(() => {
+    $is(Number.NaN).equalTo(Number.NaN)
+  }).not.throw()
+})
+
+isEqual('`is(x).equalTo(y)` should throw if invalid', () => {
+  const input = {
+    foo: [1, 2, 3],
+  }
+
+  try {
+    $is(input).equalTo({ foo: [] })
+
+    unreachable()
+  } catch (error: unknown) {
+    checkError(
+      'equal',
+      '',
+      'Test',
+      diffChecker(
+        '      {\n  ---   foo: [\n  ---     1,\n  ---     2,\n  ---     3\n  ---   ]\n  +++   foo: []\n      }\n'
+      )
+    )(error)
+  }
+})
+
+isEqual(
+  '`is(x).equalTo(y)` should throw with a custom message if passed',
+  () => {
+    const input = {
+      foo: [1],
+    }
+
+    try {
+      $is(input).equalTo({ foo: [] }, 'Custom message')
+
+      unreachable()
+    } catch (error: unknown) {
+      checkError(
+        'equal',
+        'Custom message',
+        'Test',
+        diffChecker(
+          '      {\n  ---   foo: [\n  ---     1\n  ---   ]\n  +++   foo: []\n      }\n'
+        )
+      )(error)
+    }
+  }
+)
+
+void isEqual.run()
