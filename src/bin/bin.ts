@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { cwd } from 'node:process'
+import { cwd, exit, argv } from 'node:process'
 import { resolve as resolvePath } from 'node:path'
 import { cpus } from 'node:os'
 
@@ -136,10 +136,10 @@ sade('test-please', true)
       })
 
       if (stats.failed > 0) {
-        process.exit(1)
+        exit(1)
       }
     } catch {
-      process.exit(1)
+      exit(1)
     }
   })
-  .parse(process.argv)
+  .parse(argv)
