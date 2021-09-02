@@ -136,6 +136,48 @@ isTests('`is(x, y)` should throw with a custom message if passed', () => {
 
 void isTests.run()
 
+// Testing is(x).not(y)
+const isNot = suite('ix(x).not(y)')
+
+isNot('`is(x).not(y)` should be a function', () => {
+  is(typeof $is(0).not, 'function')
+})
+
+isNot('`is(x).not(y)` should not throw if valid', async () => {
+  await does(() => {
+    $is(0).not(1)
+    $is(true).not(false)
+    $is('a').not('b')
+    $is({}).not({})
+    $is([]).not([])
+    $is(Symbol('symbol')).not(Symbol('symbol'))
+    $is(null).not(undefined)
+    $is(undefined).not(null)
+    $is(BigInt('0x1fffffffffffff')).not(BigInt('0x1ffffffffffffe'))
+    $is(Number.NaN).not(Number.POSITIVE_INFINITY)
+  }).not.throw()
+})
+
+isNot('`is(x).not(y)` should throw if invalid', () => {
+  try {
+    $is(true).not(true)
+
+    unreachable()
+  } catch (error: unknown) {
+    checkError('is:not', '', 'Test', diffChecker('  true'))(error)
+  }
+})
+
+isNot('`is(x).not(y)` should throw with a custom message if passed', () => {
+  try {
+    $is(true).not(true, 'Custom message')
+  } catch (error: unknown) {
+    checkError('is:not', 'Custom message', 'Test', diffChecker('  true'))(error)
+  }
+})
+
+void isNot.run()
+
 // Testing is(x).equalTo(y)
 const isEqual = suite('is(x).equalTo(y)')
 
