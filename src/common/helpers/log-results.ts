@@ -161,6 +161,6 @@ export const logResults = ({
         stats,
       },
       suiteName,
-    }) // eslint-disable-line unicorn/require-post-message-target-origin
+    })
   }
 }
