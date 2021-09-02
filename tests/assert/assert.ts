@@ -376,3 +376,58 @@ isTruthy(
 )
 
 void isTruthy.run()
+
+// Testing is(x).falsy()
+const isFalsy = suite('is(x).falsy()')
+
+isFalsy('`is(x).falsy()` should be a function', () => {
+  is(typeof $is(false).falsy, 'function')
+})
+
+isFalsy('`is(x).falsy()` should not throw if valid', async () => {
+  await does(() => {
+    $is(false).falsy()
+    $is(0).falsy()
+    $is(-0).falsy()
+    $is(BigInt('0x0')).falsy()
+    $is('').falsy()
+    $is(null).falsy()
+    $is(undefined).falsy()
+    $is(Number.NaN).falsy()
+  }).not.throw()
+})
+
+isFalsy('`is(x).falsy()` should throw if invalid', async () => {
+  try {
+    $is(true).falsy()
+
+    unreachable()
+  } catch (error: unknown) {
+    checkError(
+      'falsy',
+      '',
+      'Test',
+      diffChecker('  true converts to true.')
+    )(error)
+  }
+})
+
+isFalsy(
+  '`is(x).falsy()` should throw with a custom message if invalid',
+  async () => {
+    try {
+      $is(true).falsy('Custom message')
+
+      unreachable()
+    } catch (error: unknown) {
+      checkError(
+        'falsy',
+        'Custom message',
+        'Test',
+        diffChecker('  true converts to true.')
+      )(error)
+    }
+  }
+)
+
+void isFalsy.run()
