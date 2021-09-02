@@ -318,3 +318,61 @@ isNotEqual(
 )
 
 void isNotEqual.run()
+
+// Testing is(x).truthy()
+const isTruthy = suite('is(x).truthy()')
+
+isTruthy('`is(x).truthy()` should be a function', () => {
+  is(typeof $is(true).truthy, 'function')
+})
+
+isTruthy('`is(x).truthy()` should not throw if valid', async () => {
+  await does(() => {
+    $is(true).truthy()
+    $is({}).truthy()
+    $is([]).truthy()
+    $is(1).truthy()
+    $is('0').truthy()
+    $is('false').truthy()
+    $is(new Date()).truthy()
+    $is(-1).truthy()
+    $is(BigInt('0x12')).truthy()
+    $is(Number.POSITIVE_INFINITY).truthy()
+    $is(Number.NEGATIVE_INFINITY).truthy()
+  }).not.throw()
+})
+
+isTruthy('`is(x).truthy()` should throw if invalid', async () => {
+  try {
+    $is(false).truthy()
+
+    unreachable()
+  } catch (error: unknown) {
+    checkError(
+      'truthy',
+      '',
+      'Test',
+      diffChecker('  false converts to false.')
+    )(error)
+  }
+})
+
+isTruthy(
+  '`is(x).truthy()` should throw with a custom message if invalid',
+  async () => {
+    try {
+      $is(false).truthy('Custom message')
+
+      unreachable()
+    } catch (error: unknown) {
+      checkError(
+        'truthy',
+        'Custom message',
+        'Test',
+        diffChecker('  false converts to false.')
+      )(error)
+    }
+  }
+)
+
+void isTruthy.run()
