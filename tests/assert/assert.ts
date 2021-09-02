@@ -254,3 +254,67 @@ isEqual(
 )
 
 void isEqual.run()
+
+// Testing is(x).not.equalTo(y)
+const isNotEqual = suite('is(x).not.equalTo(y)')
+
+isNotEqual('`is(x).not.equalTo(y)` should be a function', () => {
+  is(typeof $is(0).not.equalTo, 'function')
+})
+
+isNotEqual('`is(x).not.equalTo(y)` shuold not throw if valid', async () => {
+  await does(() => {
+    $is(1).not.equalTo(2)
+    $is(true).not.equalTo(false)
+    $is('a').not.equalTo('b')
+    $is({ foo: [1, 2, 3] }).not.equalTo({ foo: [1, 2] })
+    $is([1, 2, 3]).not.equalTo([1, 2, 3, 4])
+    $is(Symbol('s1')).not.equalTo(Symbol('s2'))
+    $is(null).not.equalTo(undefined)
+    $is(undefined).not.equalTo(null)
+    $is(BigInt('0x1fffffffffffff')).not.equalTo(BigInt('0x1ffffffffffffe'))
+  }).not.throw()
+})
+
+isNotEqual('`is(x).not.equalTo(y)` should throw if invalid', () => {
+  const input = {
+    foo: [1, 2, 3],
+  }
+
+  try {
+    $is(input).not.equalTo(input)
+
+    unreachable()
+  } catch (error: unknown) {
+    checkError(
+      'not:equal',
+      '',
+      'Test',
+      diffChecker('  {\n    foo: [\n      1,\n      2,\n      3\n    ]\n  }')
+    )(error)
+  }
+})
+
+isNotEqual(
+  '`is(x).not.equalTo(y)` should throw with a custom message if passed',
+  () => {
+    const input = {
+      foo: [1],
+    }
+
+    try {
+      $is(input).not.equalTo({ foo: [1] }, 'Custom message')
+
+      unreachable()
+    } catch (error: unknown) {
+      checkError(
+        'not:equal',
+        'Custom message',
+        'Test',
+        diffChecker('  {\n    foo: [\n      1\n    ]\n  }')
+      )(error)
+    }
+  }
+)
+
+void isNotEqual.run()
