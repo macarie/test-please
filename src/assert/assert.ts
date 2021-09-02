@@ -121,8 +121,7 @@ export function is<ValueT>(value: ValueT, expected?: ValueT, message?: string) {
       return assertionFailed('equal', diff, message, assertions.equalTo)
     },
     truthy(message?: string) {
-      // eslint-disable-next-line eqeqeq
-      const satisfied = (value as unknown) == true
+      const satisfied = Boolean(value)
 
       if (satisfied) {
         return
@@ -144,10 +143,9 @@ export function is<ValueT>(value: ValueT, expected?: ValueT, message?: string) {
       return assertionFailed('true', diff, message, assertions.true)
     },
     falsy(message?: string) {
-      // eslint-disable-next-line eqeqeq
-      const satisfied = (value as unknown) == false
+      const satisfied = Boolean(value)
 
-      if (satisfied) {
+      if (!satisfied) {
         return
       }
 
