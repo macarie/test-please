@@ -84,7 +84,7 @@ export function is<ValueT>(value: ValueT, expected?: ValueT, message?: string) {
   }
 
   // Assertion is(x)[assertion](y, msg?)
-  const not = function (value: ValueT, message?: string) {
+  const not = function (expected: ValueT, message?: string) {
     const satisfied = !Object.is(value, expected)
 
     if (satisfied) {
