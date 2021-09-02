@@ -55,17 +55,17 @@
   "keywords": [],
   "devDependencies": {
     "@types/diff": "^5.0.1",
-    "@types/node": "^16.3.2",
+    "@types/node": "16.7.10",
     "@types/sade": "^1.7.3",
     "c8": "^7.8.0",
-    "esbuild": "^0.12.18",
+    "esbuild": "0.12.25",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "strip-ansi": "^7.0.0",
     "test-please": "0.0.3",
-    "type-fest": "^0.21.3",
-    "typescript": "^4.3.5",
-    "xo": "^0.41.0"
+    "type-fest": "2.1",
+    "typescript": "4.4.2",
+    "xo": "0.44"
   },
   "peerDependencies": {
     "esbuild": "^0.12.18"
