@@ -2,7 +2,10 @@ import { suite } from 'test-please'
 import { is, does, unreachable } from 'test-please/assert'
 import stripAnsi from 'strip-ansi'
 
-import { is as $is } from '../../src/assert/assert.js'
+import {
+  is as $is,
+  unreachable as $unreachable,
+} from '../../src/assert/assert.js'
 import { AssertionError } from '../../src/assert/helpers/assertion-error.js'
 
 const checkError =
@@ -512,3 +515,31 @@ isFalse('`is(x).false()` should throw with a custom message if passed', () => {
 })
 
 void isFalse.run()
+
+// Testing unreachable()
+const unreachableTests = suite('unreachable()')
+
+unreachableTests('`unreachable()` should be a function', () => {
+  is(typeof $unreachable, 'function')
+})
+
+unreachableTests('`unreachable()` should throw when reached', () => {
+  try {
+    $unreachable()
+  } catch {
+    checkError('unreachable', '', 'Test', diffChecker(''))
+  }
+})
+
+unreachableTests(
+  '`unreachable()` should throw with a custom message if passed',
+  () => {
+    try {
+      $unreachable('Custom message')
+    } catch {
+      checkError('unreachable', 'Custom message', 'Test', diffChecker(''))
+    }
+  }
+)
+
+void unreachableTests.run()
