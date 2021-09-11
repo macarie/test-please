@@ -431,3 +431,46 @@ isFalsy(
 )
 
 void isFalsy.run()
+
+// Testing is(x).true()
+const isTrue = suite('is(x).true()')
+
+isTrue('`is(x).true()` should be a function', () => {
+  is(typeof $is(true).true, 'function')
+})
+
+isTrue('`is(x).true()` should not throw if valid', async () => {
+  await does(() => {
+    $is(true).true()
+  }).not.throw()
+})
+
+isTrue('`is(x).true()` should thro if invalid', () => {
+  try {
+    $is(false).true()
+
+    unreachable()
+  } catch {
+    checkError(
+      'true',
+      '',
+      'Test',
+      diffChecker('  The received value is flase.')
+    )
+  }
+})
+
+isTrue('`is(x).true()` should throw with a custom message if passed', () => {
+  try {
+    $is(false).true('Custom message')
+  } catch (error: unknown) {
+    checkError(
+      'true',
+      'Custom message',
+      'Test',
+      diffChecker('  The received value is false.')
+    )(error)
+  }
+})
+
+void isTrue.run()
