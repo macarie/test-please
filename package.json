@@ -34,7 +34,7 @@
     "lint:tsc": "tsc --noemit",
     "lint:xo": "xo",
     "lint": "run-p -s lint:*",
-    "test": "c8 --all --src src --exclude dist --exclude tests test-please --experimental-loader test-please/experimental-loader-v12 -d tests"
+    "test": "c8 --all --src src --exclude dist --exclude tests --exclude */types test-please --experimental-loader test-please/experimental-loader-v12 -d tests"
   },
   "engines": {
     "node": ">=12.11"
