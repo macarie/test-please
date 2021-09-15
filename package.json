@@ -1,6 +1,6 @@
 {
   "name": "test-please",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A parallel-testing framework wannabe",
   "license": "MIT",
   "type": "module",
